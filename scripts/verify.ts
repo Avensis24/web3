@@ -1,20 +1,27 @@
-import hre from "hardhat";
+
 import * as fs from "fs";
 import * as path from "path";
 import { fileURLToPath } from "url";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
-async function verifyContract(address: string, constructorArguments: any[], contractPath?: string) {
+import hre from "hardhat";
+
+async function verifyContract(
+  address: string,
+  constructorArguments: any[],
+  contractPath?: string
+) {
   try {
-    await hre.run("verify:verify", {
-      address,
-      constructorArguments,
-      ...(contractPath ? { contract: contractPath } : {}),
+    console.log(`Verifying ${address}...`);
+    await hre.tasks.getTask("verify").run({
+      address: address,
+      constructorArgs: constructorArguments,
+      contract: contractPath,
     });
     console.log(`Verified: ${address}`);
   } catch (err: any) {
-    if (err.message.toLowerCase().includes("already verified")) {
+    if (err.message?.toLowerCase().includes("already verified")) {
       console.log(`Already verified: ${address}`);
     } else {
       console.error(`Verification failed for ${address}:`, err.message);
@@ -23,7 +30,9 @@ async function verifyContract(address: string, constructorArguments: any[], cont
 }
 
 async function main() {
-  const networkName = hre.network.name;
+  const connection = await hre.network.getOrCreate();
+  const networkName = connection.networkName;
+
   const deploymentsFile = path.join(__dirname, "..", "deployments", `${networkName}.json`);
 
   if (!fs.existsSync(deploymentsFile)) {
@@ -52,8 +61,8 @@ async function main() {
     [
       contracts.TokenSaleEscrow.constructorArgs[0],
       contracts.TokenSaleEscrow.constructorArgs[1],
-      BigInt(contracts.TokenSaleEscrow.constructorArgs[2]),
-      BigInt(contracts.TokenSaleEscrow.constructorArgs[3]),
+      contracts.TokenSaleEscrow.constructorArgs[2].toString(),
+      contracts.TokenSaleEscrow.constructorArgs[3].toString(),
     ],
     "contracts/TokenSaleEscrow.sol:TokenSaleEscrow"
   );

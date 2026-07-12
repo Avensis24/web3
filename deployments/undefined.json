@@ -1,0 +1,27 @@
+{
+  "timestamp": "2026-07-12T12:20:42.180Z",
+  "deployer": "0x1E0D642D24Aa3cabb20724710F4DC20Dd03A7A96",
+  "contracts": {
+    "MockUSDT": {
+      "address": "0x4797cb7ffB130B448343089E5eEcb2D2054ca018",
+      "constructorArgs": [
+        "0x1E0D642D24Aa3cabb20724710F4DC20Dd03A7A96"
+      ]
+    },
+    "TSaleToken": {
+      "address": "0x7D720991aA895b045bDDb312d6534Ebd27e46b45",
+      "constructorArgs": [
+        "0x1E0D642D24Aa3cabb20724710F4DC20Dd03A7A96"
+      ]
+    },
+    "TokenSaleEscrow": {
+      "address": "0xC8a41F4Ce17b4F11A562BD5366E61F11503C3fa4",
+      "constructorArgs": [
+        "0x4797cb7ffB130B448343089E5eEcb2D2054ca018",
+        "0x7D720991aA895b045bDDb312d6534Ebd27e46b45",
+        "1",
+        "1000000000000000000000"
+      ]
+    }
+  }
+}

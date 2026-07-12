@@ -6,8 +6,9 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function main() {
-  const networkName = network.name;
-  const { ethers } = await network.connect();
+  const connection = await network.getOrCreate();
+  const networkName = connection.networkName;
+  const { ethers } = connection;
   const [deployer] = await ethers.getSigners();
   const balance = await ethers.provider.getBalance(deployer.address);
 
@@ -20,12 +21,22 @@ async function main() {
   await mockUSDT.waitForDeployment();
   const mockUSDTAddress = await mockUSDT.getAddress();
   console.log(`MockUSDT deployed at: ${mockUSDTAddress}`);
+  const mockUSDTDeployTx = mockUSDT.deploymentTransaction();
+  if (mockUSDTDeployTx) {
+    console.log("Waiting for 5 block confirmations (MockUSDT)...");
+    await mockUSDTDeployTx.wait(5);
+  }
 
   const TSaleToken = await ethers.getContractFactory("TSaleToken");
   const tsaleToken = await TSaleToken.deploy(deployer.address);
   await tsaleToken.waitForDeployment();
   const tsaleTokenAddress = await tsaleToken.getAddress();
   console.log(`TSaleToken deployed at: ${tsaleTokenAddress}`);
+  const tsaleTokenDeployTx = tsaleToken.deploymentTransaction();
+  if (tsaleTokenDeployTx) {
+    console.log("Waiting for 5 block confirmations (TSaleToken)...");
+    await tsaleTokenDeployTx.wait(5);
+  }
 
   const rate = 1n;
   const maxPerWallet = ethers.parseEther("1000");
@@ -40,6 +51,11 @@ async function main() {
   await escrow.waitForDeployment();
   const escrowAddress = await escrow.getAddress();
   console.log(`TokenSaleEscrow deployed at: ${escrowAddress}`);
+  const escrowDeployTx = escrow.deploymentTransaction();
+  if (escrowDeployTx) {
+    console.log("Waiting for 5 block confirmations (TokenSaleEscrow)...");
+    await escrowDeployTx.wait(5);
+  }
 
   const fundAmount = ethers.parseEther("500000");
   const fundTx = await tsaleToken.transfer(escrowAddress, fundAmount);
@@ -79,11 +95,9 @@ async function main() {
 
   const outFile = path.join(deploymentsDir, `${networkName}.json`);
   fs.writeFileSync(outFile, JSON.stringify(deployment, null, 2));
+  console.log(`Deployment info saved to deployments/${networkName}.json`);
 
-  if (networkName !== "hardhat" && networkName !== "localhost") {
-    console.log("Waiting for block confirmations...");
-    await new Promise((r) => setTimeout(r, 30000));
-  }
+  console.log("Deployment completed! All contracts confirmed on-chain.");
 }
 
 main().catch((err) => {

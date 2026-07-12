@@ -29,25 +29,29 @@ export default defineConfig({
     },
     bscTestnet: {
       type: "http",
+      chainId: 97,
       chainType: "l1",
       url: process.env.BSC_TESTNET_RPC || "https://data-seed-prebsc-1-s1.bnbchain.org:8545",
       accounts: process.env.PRIVATE_KEY ? [`0x${process.env.PRIVATE_KEY}`] : [],
     },
   },
-  etherscan: {
-    apiKey: {
-      bscTestnet: process.env.BSCSCAN_API_KEY || "",
-    },
-    customChains: [
-      {
-        network: "bscTestnet",
-        chainId: 97,
-        urls: {
-          apiURL: "https://api-testnet.bscscan.com/api",
-          browserURL: "https://testnet.bscscan.com",
+  chainDescriptors: {
+    97: {
+      name: "bscTestnet",
+      blockExplorers: {
+        etherscan: {
+          url: "https://testnet.bscscan.com",
         },
       },
-    ],
+    },
+  },
+  verify: {
+    etherscan: {
+      apiKey: process.env.BSCSCAN_API_KEY || "",
+    },
+    blockscout: {
+      enabled: false,
+    },
   },
   paths: {
     sources: "./contracts",

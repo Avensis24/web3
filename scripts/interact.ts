@@ -6,8 +6,9 @@ import { fileURLToPath } from "url";
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 async function main() {
-  const networkName = network.name;
-  const { ethers } = await network.connect();
+  const connection = await network.getOrCreate();
+  const networkName = connection.networkName;
+  const { ethers } = connection;
   const [deployer] = await ethers.getSigners();
 
   const deploymentsFile = path.join(__dirname, "..", "deployments", `${networkName}.json`);
