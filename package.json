@@ -1,0 +1,26 @@
+{
+  "name": "token-sale-escrow",
+  "version": "1.0.0",
+  "description": "Fixed-Price Token Sale Escrow on BNB Smart Chain Testnet",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "compile": "hardhat compile",
+    "test": "hardhat test",
+    "deploy:testnet": "hardhat run scripts/deploy.ts --network bscTestnet",
+    "verify:testnet": "hardhat run scripts/verify.ts --network bscTestnet",
+    "interact:testnet": "hardhat run scripts/interact.ts --network bscTestnet",
+    "clean": "hardhat clean"
+  },
+  "keywords": ["web3", "solidity", "hardhat", "bnb", "token-sale", "escrow"],
+  "author": "",
+  "license": "MIT",
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox-mocha-ethers": "^3.0.0",
+    "hardhat": "^3.9.1"
+  },
+  "dependencies": {
+    "@openzeppelin/contracts": "^5.6.1",
+    "dotenv": "^17.4.2"
+  }
+}

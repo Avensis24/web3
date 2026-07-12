@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Hardhat build artifacts & cache
+artifacts/
+cache/
+dist/
+typechain-types/
+
+# Environment secrets – NEVER commit these
+.env
+.env.local
+.env.*.local
+
+# Coverage reports
+coverage/
+coverage.json
+
+# Deployment output (contains addresses but no secrets – optional to commit)
+# deployments/
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+*.suo
+*.user
+
+# Logs
+*.log
+npm-debug.log*
+
+# Temporary files
+*.tmp
+*.temp
