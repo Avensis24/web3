@@ -1,45 +1,56 @@
 import { expect } from "chai";
 import { network } from "hardhat";
+import type { HardhatEthers } from "@nomicfoundation/hardhat-ethers/src/types.js";
 
-const { ethers } = await network.create();
-
-const ONE_MUSDT = 1_000_000n;
-const ONE_TSALE = ethers.parseEther("1");
 const RATE = 1n;
-const MAX_PER_WALLET = ethers.parseEther("1000");
-const INITIAL_INV = ethers.parseEther("500000");
-
-async function deployAll() {
-  const [owner, buyer, nonOwner, poorBuyer] = await ethers.getSigners();
-
-  const MockUSDT = await ethers.getContractFactory("MockUSDT");
-  const mockUSDT = await MockUSDT.deploy(owner.address);
-  await mockUSDT.waitForDeployment();
-
-  const TSaleToken = await ethers.getContractFactory("TSaleToken");
-  const tsaleToken = await TSaleToken.deploy(owner.address);
-  await tsaleToken.waitForDeployment();
-
-  const TokenSaleEscrow = await ethers.getContractFactory("TokenSaleEscrow");
-  const escrow = await TokenSaleEscrow.deploy(
-    await mockUSDT.getAddress(),
-    await tsaleToken.getAddress(),
-    RATE,
-    MAX_PER_WALLET
-  );
-  await escrow.waitForDeployment();
-
-  await tsaleToken.transfer(await escrow.getAddress(), INITIAL_INV);
-  await mockUSDT.mint(buyer.address, 10_000n * ONE_MUSDT);
-
-  return { mockUSDT, tsaleToken, escrow, owner, buyer, nonOwner, poorBuyer };
-}
-
-function musdt(tsaleWholeTokens: bigint): bigint {
-  return tsaleWholeTokens * ONE_MUSDT;
-}
+const INITIAL_INV_WHOLE = 500000n;
 
 describe("TokenSaleEscrow", function () {
+  let ethers: HardhatEthers;
+  let ONE_MUSDT: bigint;
+  let ONE_TSALE: bigint;
+  let MAX_PER_WALLET: bigint;
+  let INITIAL_INV: bigint;
+
+  before(async function () {
+    const connection = await network.create();
+    ethers = connection.ethers;
+    ONE_MUSDT = 1_000_000n;
+    ONE_TSALE = ethers.parseEther("1");
+    MAX_PER_WALLET = ethers.parseEther("1000");
+    INITIAL_INV = ethers.parseEther(INITIAL_INV_WHOLE.toString());
+  });
+
+  async function deployAll() {
+    const [owner, buyer, nonOwner, poorBuyer] = await ethers.getSigners();
+
+    const MockUSDT = await ethers.getContractFactory("MockUSDT");
+    const mockUSDT = await MockUSDT.deploy(owner.address);
+    await mockUSDT.waitForDeployment();
+
+    const TSaleToken = await ethers.getContractFactory("TSaleToken");
+    const tsaleToken = await TSaleToken.deploy(owner.address);
+    await tsaleToken.waitForDeployment();
+
+    const TokenSaleEscrow = await ethers.getContractFactory("TokenSaleEscrow");
+    const escrow = await TokenSaleEscrow.deploy(
+      await mockUSDT.getAddress(),
+      await tsaleToken.getAddress(),
+      RATE,
+      MAX_PER_WALLET
+    );
+    await escrow.waitForDeployment();
+
+    await tsaleToken.transfer(await escrow.getAddress(), INITIAL_INV);
+    await mockUSDT.mint(buyer.address, 10_000n * ONE_MUSDT);
+
+    return { mockUSDT, tsaleToken, escrow, owner, buyer, nonOwner, poorBuyer };
+  }
+
+  function musdt(tsaleWholeTokens: bigint): bigint {
+    return tsaleWholeTokens * ONE_MUSDT;
+  }
+
   describe("Successful purchase", function () {
     it("transfers TSALE to buyer and mUSDT to escrow", async function () {
       const { mockUSDT, tsaleToken, escrow, buyer } = await deployAll();
@@ -86,7 +97,9 @@ describe("TokenSaleEscrow", function () {
       const { mockUSDT, escrow, owner, buyer } = await deployAll();
       await mockUSDT.connect(buyer).approve(await escrow.getAddress(), musdt(10n));
       await escrow.connect(owner).pause();
-      await expect(escrow.connect(buyer).buyTokens(ethers.parseEther("10"))).to.be.revertedWithCustomError(escrow, "EnforcedPause");
+      await expect(
+        escrow.connect(buyer).buyTokens(ethers.parseEther("10"))
+      ).to.be.revertedWithCustomError(escrow, "EnforcedPause");
     });
 
     it("succeeds after unpausing", async function () {
@@ -111,7 +124,9 @@ describe("TokenSaleEscrow", function () {
     it("reverts when a single purchase exceeds maxPerWallet", async function () {
       const { mockUSDT, escrow, buyer } = await deployAll();
       await mockUSDT.connect(buyer).approve(await escrow.getAddress(), musdt(1001n));
-      await expect(escrow.connect(buyer).buyTokens(ethers.parseEther("1001"))).to.be.revertedWith("Escrow: exceeds wallet purchase limit");
+      await expect(
+        escrow.connect(buyer).buyTokens(ethers.parseEther("1001"))
+      ).to.be.revertedWith("Escrow: exceeds wallet purchase limit");
     });
   });
 
@@ -130,7 +145,9 @@ describe("TokenSaleEscrow", function () {
       await escrow.connect(buyer).buyTokens(second);
       expect(await escrow.purchased(buyer.address)).to.equal(first + second);
 
-      await expect(escrow.connect(buyer).buyTokens(third)).to.be.revertedWith("Escrow: exceeds wallet purchase limit");
+      await expect(
+        escrow.connect(buyer).buyTokens(third)
+      ).to.be.revertedWith("Escrow: exceeds wallet purchase limit");
     });
   });
 
@@ -140,7 +157,9 @@ describe("TokenSaleEscrow", function () {
       await mockUSDT.connect(buyer).approve(await escrow.getAddress(), musdt(2000n));
       await escrow.connect(buyer).buyTokens(MAX_PER_WALLET);
 
-      await expect(escrow.connect(buyer).buyTokens(ONE_TSALE)).to.be.revertedWith("Escrow: exceeds wallet purchase limit");
+      await expect(
+        escrow.connect(buyer).buyTokens(ONE_TSALE)
+      ).to.be.revertedWith("Escrow: exceeds wallet purchase limit");
 
       const newMax = ethers.parseEther("2000");
       await escrow.connect(owner).setMaxPerWallet(newMax);
@@ -153,32 +172,42 @@ describe("TokenSaleEscrow", function () {
   describe("Non-owner cannot update maxPerWallet", function () {
     it("reverts setMaxPerWallet when called by non-owner", async function () {
       const { escrow, nonOwner } = await deployAll();
-      await expect(escrow.connect(nonOwner).setMaxPerWallet(ethers.parseEther("5000"))).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
+      await expect(
+        escrow.connect(nonOwner).setMaxPerWallet(ethers.parseEther("5000"))
+      ).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
     });
   });
 
   describe("Non-owner cannot pause or unpause", function () {
     it("reverts pause() when called by non-owner", async function () {
       const { escrow, nonOwner } = await deployAll();
-      await expect(escrow.connect(nonOwner).pause()).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
+      await expect(
+        escrow.connect(nonOwner).pause()
+      ).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
     });
 
     it("reverts unpause() when called by non-owner", async function () {
       const { escrow, owner, nonOwner } = await deployAll();
       await escrow.connect(owner).pause();
-      await expect(escrow.connect(nonOwner).unpause()).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
+      await expect(
+        escrow.connect(nonOwner).unpause()
+      ).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
     });
   });
 
   describe("Non-owner withdrawal must fail", function () {
     it("reverts withdrawPayments when called by non-owner", async function () {
       const { escrow, nonOwner } = await deployAll();
-      await expect(escrow.connect(nonOwner).withdrawPayments(nonOwner.address)).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
+      await expect(
+        escrow.connect(nonOwner).withdrawPayments(nonOwner.address)
+      ).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
     });
 
     it("reverts withdrawUnsoldTokens when called by non-owner", async function () {
       const { escrow, nonOwner } = await deployAll();
-      await expect(escrow.connect(nonOwner).withdrawUnsoldTokens(nonOwner.address)).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
+      await expect(
+        escrow.connect(nonOwner).withdrawUnsoldTokens(nonOwner.address)
+      ).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
     });
   });
 
@@ -238,7 +267,9 @@ describe("TokenSaleEscrow", function () {
       expect(await escrow.inventoryBalance()).to.equal(0n);
 
       await mockUSDT.connect(buyer).approve(await escrow.getAddress(), musdt(10n));
-      await expect(escrow.connect(buyer).buyTokens(ethers.parseEther("10"))).to.be.revertedWith("Escrow: insufficient token inventory");
+      await expect(
+        escrow.connect(buyer).buyTokens(ethers.parseEther("10"))
+      ).to.be.revertedWith("Escrow: insufficient token inventory");
     });
   });
 
@@ -292,17 +323,23 @@ describe("TokenSaleEscrow", function () {
   describe("Input validation", function () {
     it("reverts buyTokens with zero amount", async function () {
       const { escrow, buyer } = await deployAll();
-      await expect(escrow.connect(buyer).buyTokens(0n)).to.be.revertedWith("Escrow: amount must be positive");
+      await expect(
+        escrow.connect(buyer).buyTokens(0n)
+      ).to.be.revertedWith("Escrow: amount must be positive");
     });
 
     it("reverts withdrawPayments to zero address", async function () {
       const { escrow, owner } = await deployAll();
-      await expect(escrow.connect(owner).withdrawPayments(ethers.ZeroAddress)).to.be.revertedWith("Escrow: zero recipient address");
+      await expect(
+        escrow.connect(owner).withdrawPayments(ethers.ZeroAddress)
+      ).to.be.revertedWith("Escrow: zero recipient address");
     });
 
     it("reverts setRate with zero value", async function () {
       const { escrow, owner } = await deployAll();
-      await expect(escrow.connect(owner).setRate(0n)).to.be.revertedWith("Escrow: rate must be positive");
+      await expect(
+        escrow.connect(owner).setRate(0n)
+      ).to.be.revertedWith("Escrow: rate must be positive");
     });
   });
 });
