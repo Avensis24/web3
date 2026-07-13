@@ -28,20 +28,31 @@ async function main() {
   const buyAmount = ethers.parseEther("10");
   const cost = await escrow.calculateCost(buyAmount);
 
+  // Mint mUSDT to deployer if balance is insufficient
+  const deployerBalance = await mockUSDT.balanceOf(deployer.address);
+  if (deployerBalance < cost) {
+    console.log("Minting mUSDT for deployer...");
+    const mintTx = await mockUSDT.mint(deployer.address, cost * 10n);
+    await mintTx.wait();
+    console.log(`Minted mUSDT: ${mintTx.hash}`);
+  }
+
+  console.log(`Cost for 10 TSALE: ${ethers.formatUnits(cost, 6)} mUSDT`);
+
   console.log("Approving token spend...");
   const approveTx = await mockUSDT.approve(contracts.TokenSaleEscrow.address, cost);
   await approveTx.wait();
-  console.log(`Approved: ${approveTx.hash}`);
+  console.log(`Approval tx hash : ${approveTx.hash}`);
 
   console.log("Purchasing tokens...");
   const buyTx = await escrow.buyTokens(buyAmount);
   await buyTx.wait();
-  console.log(`Purchased: ${buyTx.hash}`);
+  console.log(`Purchase tx hash : ${buyTx.hash}`);
 
   console.log("Withdrawing payments...");
   const withdrawTx = await escrow.withdrawPayments(deployer.address);
   await withdrawTx.wait();
-  console.log(`Withdrawn: ${withdrawTx.hash}`);
+  console.log(`Withdrawal tx hash: ${withdrawTx.hash}`);
 }
 
 main().catch((err) => {

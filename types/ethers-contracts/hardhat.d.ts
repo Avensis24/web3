@@ -10,21 +10,21 @@ import * as Contracts from "./index.js";
 
 declare module "@nomicfoundation/hardhat-ethers/types" {
   interface HardhatEthersHelpers extends HardhatEthersHelpersBase {
-  getContractFactory(name: 'TokenSaleEscrow', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.TokenSaleEscrow__factory>
+  getContractFactory(name: 'TSaleToken', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.TSaleToken__factory>
 getContractFactory(name: 'MockUSDT', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.MockUSDT__factory>
-getContractFactory(name: 'TSaleToken', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.TSaleToken__factory>
+getContractFactory(name: 'TokenSaleEscrow', signerOrOptions?: ethers.Signer | FactoryOptions): Promise<Contracts.TokenSaleEscrow__factory>
 
-  getContractAt(name: 'TokenSaleEscrow', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.TokenSaleEscrow>
+  getContractAt(name: 'TSaleToken', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.TSaleToken>
 getContractAt(name: 'MockUSDT', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.MockUSDT>
-getContractAt(name: 'TSaleToken', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.TSaleToken>
+getContractAt(name: 'TokenSaleEscrow', address: string | ethers.Addressable, signer?: ethers.Signer): Promise<Contracts.TokenSaleEscrow>
 
-  deployContract(name: 'TokenSaleEscrow', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenSaleEscrow>
+  deployContract(name: 'TSaleToken', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TSaleToken>
 deployContract(name: 'MockUSDT', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MockUSDT>
-deployContract(name: 'TSaleToken', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TSaleToken>
+deployContract(name: 'TokenSaleEscrow', signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenSaleEscrow>
 
-  deployContract(name: 'TokenSaleEscrow', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenSaleEscrow>
+  deployContract(name: 'TSaleToken', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TSaleToken>
 deployContract(name: 'MockUSDT', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.MockUSDT>
-deployContract(name: 'TSaleToken', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TSaleToken>
+deployContract(name: 'TokenSaleEscrow', args: any[], signerOrOptions?: ethers.Signer | DeployContractOptions): Promise<Contracts.TokenSaleEscrow>
 
     // default types
     getContractFactory(
