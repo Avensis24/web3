@@ -102,57 +102,65 @@ npm run compile
 npm test
 ```
 
-**Test Results: 27 / 27 passing**
+**Test Results: 33 / 33 passing**
 
 ```
-  TokenSaleEscrow
+   TokenSaleEscrow
     Successful purchase
-      ✓ transfers TSALE to buyer and mUSDT to escrow
+      ✔ transfers TSALE to buyer and mUSDT to escrow (167ms)
     Purchase without token approval
-      ✓ reverts when buyer has not approved the escrow
+      ✔ reverts when buyer has not approved the escrow (54ms)
     Purchase with insufficient allowance
-      ✓ reverts when allowance < required cost
+      ✔ reverts when allowance < required cost
     Purchase with insufficient payment-token balance
-      ✓ reverts when buyer has no mUSDT
+      ✔ reverts when buyer has no mUSDT
     Purchase while contract is paused
-      ✓ reverts buyTokens when paused
-      ✓ succeeds after unpausing
+      ✔ reverts buyTokens when paused
+      ✔ succeeds after unpausing
     Purchase within wallet limit
-      ✓ allows purchase that does not exceed maxPerWallet
+      ✔ allows purchase that does not exceed maxPerWallet (45ms)
     Purchase exceeding wallet limit
-      ✓ reverts when a single purchase exceeds maxPerWallet
+      ✔ reverts when a single purchase exceeds maxPerWallet
     Cumulative purchase tracking
-      ✓ tracks two partial buys and rejects a third that exceeds the limit
+      ✔ tracks two partial buys and rejects a third that exceeds the limit (43ms)
     Owner can update maxPerWallet
-      ✓ raises the limit and allows a previously-rejected purchase
+      ✔ raises the limit and allows a previously-rejected purchase (46ms)
     Non-owner cannot update maxPerWallet
-      ✓ reverts setMaxPerWallet when called by non-owner
+      ✔ reverts setMaxPerWallet when called by non-owner
     Non-owner cannot pause or unpause
-      ✓ reverts pause() when called by non-owner
-      ✓ reverts unpause() when called by non-owner
+      ✔ reverts pause() when called by non-owner
+      ✔ reverts unpause() when called by non-owner (39ms)
     Non-owner withdrawal must fail
-      ✓ reverts withdrawPayments when called by non-owner
-      ✓ reverts withdrawUnsoldTokens when called by non-owner
+      ✔ reverts withdrawPayments when called by non-owner
+      ✔ reverts withdrawUnsoldTokens when called by non-owner
     Owner payment withdrawal
-      ✓ transfers all collected mUSDT to the owner
+      ✔ transfers all collected mUSDT to the owner (39ms)
     Owner unsold-token withdrawal
-      ✓ transfers all unsold TSALE to the owner
+      ✔ transfers all unsold TSALE to the owner
     Correct balances after purchase
-      ✓ reflects accurate mUSDT and TSALE changes for buyer and escrow
+      ✔ reflects accurate mUSDT and TSALE changes for buyer and escrow
     Purchase fails when inventory is insufficient
-      ✓ reverts when escrow holds fewer tokens than requested
+      ✔ reverts when escrow holds fewer tokens than requested
     Events are emitted correctly
-      ✓ emits TokensPurchased with correct args
-      ✓ emits PaymentWithdrawn with correct args
-      ✓ emits UnsoldTokensWithdrawn with correct args
-      ✓ emits RateUpdated when setRate is called
-      ✓ emits MaxPerWalletUpdated when setMaxPerWallet is called
+      ✔ emits TokensPurchased with correct args
+      ✔ emits PaymentWithdrawn with correct args (47ms)
+      ✔ emits UnsoldTokensWithdrawn with correct args
+      ✔ emits RateUpdated when setRate is called
+      ✔ emits MaxPerWalletUpdated when setMaxPerWallet is called
     Input validation
-      ✓ reverts buyTokens with zero amount
-      ✓ reverts withdrawPayments to zero address
-      ✓ reverts setRate with zero value
+      ✔ reverts buyTokens with zero amount
+      ✔ reverts withdrawPayments to zero address
+      ✔ reverts setRate with zero value
+    Minimum Purchase
+      ✔ Purchase below minimum should revert
+      ✔ Purchase equal to minimum succeeds (46ms)
+      ✔ Purchase above minimum succeeds
+      ✔ Owner can update minimum purchase
+      ✔ Non-owner cannot update minimum purchase
+      ✔ Event MinPurchaseUpdated emitted correctly
 
-  27 passing (2s)
+
+  33 passing (3s)
 ```
 
 ---
@@ -179,9 +187,9 @@ npm run verify:testnet
 
 | Contract | Address |
 |---|---|
-| **MockUSDT** | `0x8a1daCe1BBc1dCFf712B016e591FF720F04dd3d0` |
-| **TSaleToken** | `0x7A6D605E63608A98E85D5674CaCd33a652102F1e` |
-| **TokenSaleEscrow** | `0x0dd07120Bb7fA7eFe93E9Aa21E8588336c869CEe` |
+| **MockUSDT** | `0x71F5a85f3025833deF2BFdfB6406b0185C67aaE3` |
+| **TSaleToken** | `0x250F8B6493B751E6167dA2075Ab43C4561312D07` |
+| **TokenSaleEscrow** | `0x0d1d4257d722118937cd821fb36A01B9329E161a` |
 
 ---
 
@@ -189,9 +197,9 @@ npm run verify:testnet
 
 | Contract | BscScan Link |
 |---|---|
-| **MockUSDT** | [View verified source](https://testnet.bscscan.com/address/0x8a1daCe1BBc1dCFf712B016e591FF720F04dd3d0#code) |
-| **TSaleToken** | [View verified source](https://testnet.bscscan.com/address/0x7A6D605E63608A98E85D5674CaCd33a652102F1e#code) |
-| **TokenSaleEscrow** | [View verified source](https://testnet.bscscan.com/address/0x0dd07120Bb7fA7eFe93E9Aa21E8588336c869CEe#code) |
+| **MockUSDT** | [View verified source](https://testnet.bscscan.com/address/0x71F5a85f3025833deF2BFdfB6406b0185C67aaE3) |
+| **TSaleToken** | [View verified source](https://testnet.bscscan.com/address/0x250F8B6493B751E6167dA2075Ab43C4561312D07) |
+| **TokenSaleEscrow** | [View verified source](https://testnet.bscscan.com/address/0x0d1d4257d722118937cd821fb36A01B9329E161a) |
 
 ---
 
@@ -209,9 +217,9 @@ npm run verify:testnet
 
 | Action | Transaction Hash | BscScan Link |
 |---|---|---|
-| **Approval** (mUSDT → Escrow) | `0x96d1a592df7dd10dcb837838e06897536be82d777436fb54d00b01559b44b9f8` | [View](https://testnet.bscscan.com/tx/0x96d1a592df7dd10dcb837838e06897536be82d777436fb54d00b01559b44b9f8) |
-| **Purchase** (10 TSALE for 10 mUSDT) | `0xbb23e52f16d51b1c49a3868d7c855881996089baa11a231abbef7af6e31c12b6` | [View](https://testnet.bscscan.com/tx/0xbb23e52f16d51b1c49a3868d7c855881996089baa11a231abbef7af6e31c12b6) |
-| **Withdrawal** (owner withdraws mUSDT) | `0xe89e360a6fe6ec17277d314e078f0b5ea86bf7675af37da1a55de178b453b20e` | [View](https://testnet.bscscan.com/tx/0xe89e360a6fe6ec17277d314e078f0b5ea86bf7675af37da1a55de178b453b20e) |
+| **Approval** (mUSDT → Escrow) | `0xf44b3b433ab60fcce0df53416fbdc5135810d9b6ae5dc225e9ef21d5605d6b01` | [View](https://testnet.bscscan.com/tx/0xf44b3b433ab60fcce0df53416fbdc5135810d9b6ae5dc225e9ef21d5605d6b01) |
+| **Purchase** (10 TSALE for 10 mUSDT) | ` 0x6b28c63a1a2e791c5b4b9a702a9f438f1f628f6d8c6552f0662466f363a74b7a` | [View](https://testnet.bscscan.com/tx/ 0x6b28c63a1a2e791c5b4b9a702a9f438f1f628f6d8c6552f0662466f363a74b7a) |
+| **Withdrawal** (owner withdraws mUSDT) | `0x02ad72f7ef34d85bca45bb98547b024a9e31f1a3db85cd8d8024492b0a45b24a` | [View](https://testnet.bscscan.com/tx/0x02ad72f7ef34d85bca45bb98547b024a9e31f1a3db85cd8d8024492b0a45b24a) |
 
 ---
 

@@ -40,13 +40,15 @@ async function main() {
 
   const rate = 1n;
   const maxPerWallet = ethers.parseEther("1000");
+  const minPurchase = ethers.parseEther("1");
 
   const TokenSaleEscrow = await ethers.getContractFactory("TokenSaleEscrow");
   const escrow = await TokenSaleEscrow.deploy(
     mockUSDTAddress,
     tsaleTokenAddress,
     rate,
-    maxPerWallet
+    maxPerWallet,
+    minPurchase
   );
   await escrow.waitForDeployment();
   const escrowAddress = await escrow.getAddress();
@@ -88,6 +90,7 @@ async function main() {
           tsaleTokenAddress,
           rate.toString(),
           maxPerWallet.toString(),
+          minPurchase.toString(),
         ],
       },
     },

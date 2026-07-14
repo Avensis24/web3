@@ -52,6 +52,9 @@ export default defineConfig({
     blockscout: {
       enabled: false,
     },
+    sourcify: {
+      enabled: false,
+    },
   },
   paths: {
     sources: "./contracts",

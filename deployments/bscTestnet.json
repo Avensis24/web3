@@ -1,27 +1,28 @@
 {
   "network": "bscTestnet",
-  "timestamp": "2026-07-13T11:40:25.650Z",
+  "timestamp": "2026-07-14T04:33:39.565Z",
   "deployer": "0x1E0D642D24Aa3cabb20724710F4DC20Dd03A7A96",
   "contracts": {
     "MockUSDT": {
-      "address": "0x8a1daCe1BBc1dCFf712B016e591FF720F04dd3d0",
+      "address": "0x71F5a85f3025833deF2BFdfB6406b0185C67aaE3",
       "constructorArgs": [
         "0x1E0D642D24Aa3cabb20724710F4DC20Dd03A7A96"
       ]
     },
     "TSaleToken": {
-      "address": "0x7A6D605E63608A98E85D5674CaCd33a652102F1e",
+      "address": "0x250F8B6493B751E6167dA2075Ab43C4561312D07",
       "constructorArgs": [
         "0x1E0D642D24Aa3cabb20724710F4DC20Dd03A7A96"
       ]
     },
     "TokenSaleEscrow": {
-      "address": "0x0dd07120Bb7fA7eFe93E9Aa21E8588336c869CEe",
+      "address": "0x0d1d4257d722118937cd821fb36A01B9329E161a",
       "constructorArgs": [
-        "0x8a1daCe1BBc1dCFf712B016e591FF720F04dd3d0",
-        "0x7A6D605E63608A98E85D5674CaCd33a652102F1e",
+        "0x71F5a85f3025833deF2BFdfB6406b0185C67aaE3",
+        "0x250F8B6493B751E6167dA2075Ab43C4561312D07",
         "1",
-        "1000000000000000000000"
+        "1000000000000000000000",
+        "1000000000000000000"
       ]
     }
   }

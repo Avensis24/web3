@@ -10,6 +10,7 @@ describe("TokenSaleEscrow", function () {
   let ONE_MUSDT: bigint;
   let ONE_TSALE: bigint;
   let MAX_PER_WALLET: bigint;
+  let MIN_PURCHASE: bigint;
   let INITIAL_INV: bigint;
 
   before(async function () {
@@ -18,6 +19,7 @@ describe("TokenSaleEscrow", function () {
     ONE_MUSDT = 1_000_000n;
     ONE_TSALE = ethers.parseEther("1");
     MAX_PER_WALLET = ethers.parseEther("1000");
+    MIN_PURCHASE = ethers.parseEther("1");
     INITIAL_INV = ethers.parseEther(INITIAL_INV_WHOLE.toString());
   });
 
@@ -37,7 +39,8 @@ describe("TokenSaleEscrow", function () {
       await mockUSDT.getAddress(),
       await tsaleToken.getAddress(),
       RATE,
-      MAX_PER_WALLET
+      MAX_PER_WALLET,
+      MIN_PURCHASE
     );
     await escrow.waitForDeployment();
 
@@ -340,6 +343,63 @@ describe("TokenSaleEscrow", function () {
       await expect(
         escrow.connect(owner).setRate(0n)
       ).to.be.revertedWith("Escrow: rate must be positive");
+    });
+  });
+
+  describe("Minimum Purchase", function () {
+    it("Purchase below minimum should revert", async function () {
+      const { mockUSDT, escrow, buyer } = await deployAll();
+      const min = await escrow.minPurchase();
+      const buyAmount = min - 1n;
+      await mockUSDT.connect(buyer).approve(await escrow.getAddress(), musdt(10n));
+      await expect(
+        escrow.connect(buyer).buyTokens(buyAmount)
+      ).to.be.revertedWith("Escrow: below minimum purchase");
+    });
+
+    it("Purchase equal to minimum succeeds", async function () {
+      const { mockUSDT, escrow, buyer } = await deployAll();
+      const min = await escrow.minPurchase();
+      const cost = await escrow.calculateCost(min);
+      await mockUSDT.connect(buyer).approve(await escrow.getAddress(), cost);
+      
+      await escrow.connect(buyer).buyTokens(min);
+      expect(await escrow.purchased(buyer.address)).to.equal(min);
+    });
+
+    it("Purchase above minimum succeeds", async function () {
+      const { mockUSDT, escrow, buyer } = await deployAll();
+      const min = await escrow.minPurchase();
+      const buyAmount = min + ethers.parseEther("1");
+      const cost = await escrow.calculateCost(buyAmount);
+      await mockUSDT.connect(buyer).approve(await escrow.getAddress(), cost);
+      
+      await escrow.connect(buyer).buyTokens(buyAmount);
+      expect(await escrow.purchased(buyer.address)).to.equal(buyAmount);
+    });
+
+    it("Owner can update minimum purchase", async function () {
+      const { escrow, owner } = await deployAll();
+      const newMin = ethers.parseEther("5");
+      await escrow.connect(owner).setMinPurchase(newMin);
+      expect(await escrow.minPurchase()).to.equal(newMin);
+    });
+
+    it("Non-owner cannot update minimum purchase", async function () {
+      const { escrow, nonOwner } = await deployAll();
+      const newMin = ethers.parseEther("5");
+      await expect(
+        escrow.connect(nonOwner).setMinPurchase(newMin)
+      ).to.be.revertedWithCustomError(escrow, "OwnableUnauthorizedAccount");
+    });
+
+    it("Event MinPurchaseUpdated emitted correctly", async function () {
+      const { escrow, owner } = await deployAll();
+      const oldMin = await escrow.minPurchase();
+      const newMin = ethers.parseEther("5");
+      await expect(escrow.connect(owner).setMinPurchase(newMin))
+        .to.emit(escrow, "MinPurchaseUpdated")
+        .withArgs(oldMin, newMin);
     });
   });
 });

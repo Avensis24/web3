@@ -5,6 +5,6 @@ export type { MockUSDT } from './MockUSDT.js';
 export type { TSaleToken } from './TSaleToken.js';
 export type { TokenSaleEscrow } from './TokenSaleEscrow.js';
 export * as factories from './factories/index.js';
-export { TSaleToken__factory } from './factories/TSaleToken__factory.js';
 export { MockUSDT__factory } from './factories/MockUSDT__factory.js';
 export { TokenSaleEscrow__factory } from './factories/TokenSaleEscrow__factory.js';
+export { TSaleToken__factory } from './factories/TSaleToken__factory.js';

@@ -63,6 +63,7 @@ async function main() {
       contracts.TokenSaleEscrow.constructorArgs[1],
       contracts.TokenSaleEscrow.constructorArgs[2].toString(),
       contracts.TokenSaleEscrow.constructorArgs[3].toString(),
+      contracts.TokenSaleEscrow.constructorArgs[4].toString(),
     ],
     "contracts/TokenSaleEscrow.sol:TokenSaleEscrow"
   );

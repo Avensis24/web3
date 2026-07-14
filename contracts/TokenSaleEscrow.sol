@@ -2,7 +2,6 @@
 pragma solidity ^0.8.24;
 
 import "@openzeppelin/contracts/token/ERC20/IERC20.sol";
-import "@openzeppelin/contracts/token/ERC20/extensions/IERC20Metadata.sol";
 import "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "@openzeppelin/contracts/utils/Pausable.sol";
@@ -16,6 +15,7 @@ contract TokenSaleEscrow is Ownable, Pausable, ReentrancyGuard {
 
     uint256 public rate;
     uint256 public maxPerWallet;
+    uint256 public minPurchase;
 
     mapping(address => uint256) public purchased;
 
@@ -24,22 +24,26 @@ contract TokenSaleEscrow is Ownable, Pausable, ReentrancyGuard {
     event UnsoldTokensWithdrawn(address indexed to, uint256 amount);
     event RateUpdated(uint256 oldRate, uint256 newRate);
     event MaxPerWalletUpdated(uint256 oldMax, uint256 newMax);
+    event MinPurchaseUpdated(uint256 oldMin, uint256 newMin);
 
     constructor(
         address _paymentToken,
         address _saleToken,
         uint256 _rate,
-        uint256 _maxPerWallet
+        uint256 _maxPerWallet,
+        uint256 _minPurchase
     ) Ownable(msg.sender) {
         require(_paymentToken != address(0), "Escrow: zero payment token address");
         require(_saleToken != address(0), "Escrow: zero sale token address");
         require(_rate > 0, "Escrow: rate must be positive");
         require(_maxPerWallet > 0, "Escrow: max per wallet must be positive");
+        require(_minPurchase > 0, "Escrow: min purchase must be positive");
 
         paymentToken = IERC20(_paymentToken);
         saleToken = IERC20(_saleToken);
         rate = _rate;
         maxPerWallet = _maxPerWallet;
+        minPurchase = _minPurchase;
     }
 
     function calculateCost(uint256 tsaleAmount) public view returns (uint256 cost) {
@@ -56,6 +60,7 @@ contract TokenSaleEscrow is Ownable, Pausable, ReentrancyGuard {
 
     function buyTokens(uint256 tsaleAmount) external nonReentrant whenNotPaused {
         require(tsaleAmount > 0, "Escrow: amount must be positive");
+        require(tsaleAmount >= minPurchase, "Escrow: below minimum purchase");
 
         uint256 cost = calculateCost(tsaleAmount);
         require(cost > 0, "Escrow: payment amount too small");
@@ -106,6 +111,13 @@ contract TokenSaleEscrow is Ownable, Pausable, ReentrancyGuard {
         uint256 oldMax = maxPerWallet;
         maxPerWallet = newMax;
         emit MaxPerWalletUpdated(oldMax, newMax);
+    }
+
+    function setMinPurchase(uint256 newMin) external onlyOwner {
+        require(newMin > 0, "Escrow: min must be positive");
+        uint256 oldMin = minPurchase;
+        minPurchase = newMin;
+        emit MinPurchaseUpdated(oldMin, newMin);
     }
 
     function pause() external onlyOwner {

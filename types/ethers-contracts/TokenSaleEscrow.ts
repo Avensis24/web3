@@ -6,14 +6,15 @@ import type { TypedContractEvent, TypedDeferredTopicFilter, TypedEventLog, Typed
   
 
   export interface TokenSaleEscrowInterface extends Interface {
-    getFunction(nameOrSignature: "buyTokens" | "calculateCost" | "inventoryBalance" | "maxPerWallet" | "owner" | "pause" | "paused" | "paymentBalance" | "paymentToken" | "purchased" | "rate" | "renounceOwnership" | "saleToken" | "setMaxPerWallet" | "setRate" | "transferOwnership" | "unpause" | "withdrawPayments" | "withdrawUnsoldTokens"): FunctionFragment;
+    getFunction(nameOrSignature: "buyTokens" | "calculateCost" | "inventoryBalance" | "maxPerWallet" | "minPurchase" | "owner" | "pause" | "paused" | "paymentBalance" | "paymentToken" | "purchased" | "rate" | "renounceOwnership" | "saleToken" | "setMaxPerWallet" | "setMinPurchase" | "setRate" | "transferOwnership" | "unpause" | "withdrawPayments" | "withdrawUnsoldTokens"): FunctionFragment;
 
-    getEvent(nameOrSignatureOrTopic: "MaxPerWalletUpdated" | "OwnershipTransferred" | "Paused" | "PaymentWithdrawn" | "RateUpdated" | "TokensPurchased" | "Unpaused" | "UnsoldTokensWithdrawn"): EventFragment;
+    getEvent(nameOrSignatureOrTopic: "MaxPerWalletUpdated" | "MinPurchaseUpdated" | "OwnershipTransferred" | "Paused" | "PaymentWithdrawn" | "RateUpdated" | "TokensPurchased" | "Unpaused" | "UnsoldTokensWithdrawn"): EventFragment;
 
     encodeFunctionData(functionFragment: 'buyTokens', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'calculateCost', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'inventoryBalance', values?: undefined): string;
 encodeFunctionData(functionFragment: 'maxPerWallet', values?: undefined): string;
+encodeFunctionData(functionFragment: 'minPurchase', values?: undefined): string;
 encodeFunctionData(functionFragment: 'owner', values?: undefined): string;
 encodeFunctionData(functionFragment: 'pause', values?: undefined): string;
 encodeFunctionData(functionFragment: 'paused', values?: undefined): string;
@@ -24,6 +25,7 @@ encodeFunctionData(functionFragment: 'rate', values?: undefined): string;
 encodeFunctionData(functionFragment: 'renounceOwnership', values?: undefined): string;
 encodeFunctionData(functionFragment: 'saleToken', values?: undefined): string;
 encodeFunctionData(functionFragment: 'setMaxPerWallet', values: [BigNumberish]): string;
+encodeFunctionData(functionFragment: 'setMinPurchase', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'setRate', values: [BigNumberish]): string;
 encodeFunctionData(functionFragment: 'transferOwnership', values: [AddressLike]): string;
 encodeFunctionData(functionFragment: 'unpause', values?: undefined): string;
@@ -34,6 +36,7 @@ encodeFunctionData(functionFragment: 'withdrawUnsoldTokens', values: [AddressLik
 decodeFunctionResult(functionFragment: 'calculateCost', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'inventoryBalance', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'maxPerWallet', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'minPurchase', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'owner', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'pause', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'paused', data: BytesLike): Result;
@@ -44,6 +47,7 @@ decodeFunctionResult(functionFragment: 'rate', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'renounceOwnership', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'saleToken', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setMaxPerWallet', data: BytesLike): Result;
+decodeFunctionResult(functionFragment: 'setMinPurchase', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'setRate', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'transferOwnership', data: BytesLike): Result;
 decodeFunctionResult(functionFragment: 'unpause', data: BytesLike): Result;
@@ -56,6 +60,18 @@ decodeFunctionResult(functionFragment: 'withdrawUnsoldTokens', data: BytesLike):
       export type InputTuple = [oldMax: BigNumberish, newMax: BigNumberish];
       export type OutputTuple = [oldMax: bigint, newMax: bigint];
       export interface OutputObject {oldMax: bigint, newMax: bigint };
+      export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
+      export type Filter = TypedDeferredTopicFilter<Event>
+      export type Log = TypedEventLog<Event>
+      export type LogDescription = TypedLogDescription<Event>
+    }
+
+  
+
+    export namespace MinPurchaseUpdatedEvent {
+      export type InputTuple = [oldMin: BigNumberish, newMin: BigNumberish];
+      export type OutputTuple = [oldMin: bigint, newMin: bigint];
+      export interface OutputObject {oldMin: bigint, newMin: bigint };
       export type Event = TypedContractEvent<InputTuple, OutputTuple, OutputObject>
       export type Filter = TypedDeferredTopicFilter<Event>
       export type Log = TypedEventLog<Event>
@@ -214,6 +230,14 @@ decodeFunctionResult(functionFragment: 'withdrawUnsoldTokens', data: BytesLike):
     
 
     
+    minPurchase: TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >
+    
+
+    
     owner: TypedContractMethod<
       [],
       [string],
@@ -294,6 +318,14 @@ decodeFunctionResult(functionFragment: 'withdrawUnsoldTokens', data: BytesLike):
     
 
     
+    setMinPurchase: TypedContractMethod<
+      [newMin: BigNumberish, ],
+      [void],
+      'nonpayable'
+    >
+    
+
+    
     setRate: TypedContractMethod<
       [newRate: BigNumberish, ],
       [void],
@@ -356,6 +388,11 @@ getFunction(nameOrSignature: 'maxPerWallet'): TypedContractMethod<
       [bigint],
       'view'
     >;
+getFunction(nameOrSignature: 'minPurchase'): TypedContractMethod<
+      [],
+      [bigint],
+      'view'
+    >;
 getFunction(nameOrSignature: 'owner'): TypedContractMethod<
       [],
       [string],
@@ -406,6 +443,11 @@ getFunction(nameOrSignature: 'setMaxPerWallet'): TypedContractMethod<
       [void],
       'nonpayable'
     >;
+getFunction(nameOrSignature: 'setMinPurchase'): TypedContractMethod<
+      [newMin: BigNumberish, ],
+      [void],
+      'nonpayable'
+    >;
 getFunction(nameOrSignature: 'setRate'): TypedContractMethod<
       [newRate: BigNumberish, ],
       [void],
@@ -433,6 +475,7 @@ getFunction(nameOrSignature: 'withdrawUnsoldTokens'): TypedContractMethod<
     >;
 
     getEvent(key: 'MaxPerWalletUpdated'): TypedContractEvent<MaxPerWalletUpdatedEvent.InputTuple, MaxPerWalletUpdatedEvent.OutputTuple, MaxPerWalletUpdatedEvent.OutputObject>;
+getEvent(key: 'MinPurchaseUpdated'): TypedContractEvent<MinPurchaseUpdatedEvent.InputTuple, MinPurchaseUpdatedEvent.OutputTuple, MinPurchaseUpdatedEvent.OutputObject>;
 getEvent(key: 'OwnershipTransferred'): TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
 getEvent(key: 'Paused'): TypedContractEvent<PausedEvent.InputTuple, PausedEvent.OutputTuple, PausedEvent.OutputObject>;
 getEvent(key: 'PaymentWithdrawn'): TypedContractEvent<PaymentWithdrawnEvent.InputTuple, PaymentWithdrawnEvent.OutputTuple, PaymentWithdrawnEvent.OutputObject>;
@@ -445,6 +488,10 @@ getEvent(key: 'UnsoldTokensWithdrawn'): TypedContractEvent<UnsoldTokensWithdrawn
       
       'MaxPerWalletUpdated(uint256,uint256)': TypedContractEvent<MaxPerWalletUpdatedEvent.InputTuple, MaxPerWalletUpdatedEvent.OutputTuple, MaxPerWalletUpdatedEvent.OutputObject>;
       MaxPerWalletUpdated: TypedContractEvent<MaxPerWalletUpdatedEvent.InputTuple, MaxPerWalletUpdatedEvent.OutputTuple, MaxPerWalletUpdatedEvent.OutputObject>;
+    
+
+      'MinPurchaseUpdated(uint256,uint256)': TypedContractEvent<MinPurchaseUpdatedEvent.InputTuple, MinPurchaseUpdatedEvent.OutputTuple, MinPurchaseUpdatedEvent.OutputObject>;
+      MinPurchaseUpdated: TypedContractEvent<MinPurchaseUpdatedEvent.InputTuple, MinPurchaseUpdatedEvent.OutputTuple, MinPurchaseUpdatedEvent.OutputObject>;
     
 
       'OwnershipTransferred(address,address)': TypedContractEvent<OwnershipTransferredEvent.InputTuple, OwnershipTransferredEvent.OutputTuple, OwnershipTransferredEvent.OutputObject>;
